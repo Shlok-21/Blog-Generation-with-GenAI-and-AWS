@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Blog Generator</h1>
+        <h2>Generated Blog for "{{ blog_title }}"</h2>
+        <div id="blogDisplay">
+            <p>{{ blog_content }}</p>
+            <button id="downloadBtn">Download Blog</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            const blogContent = document.querySelector('#blogDisplay p').textContent;
+            const blob = new Blob([blogContent], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'blog.txt';
+            link.click();
+        });
+    </script>
+</body>
+</html>

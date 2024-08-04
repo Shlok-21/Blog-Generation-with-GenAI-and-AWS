@@ -1,26 +1,20 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Blog Generator</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-    </head>
-    <body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+    <div class="container">
         <h1>Blog Generator</h1>
-        <form id="blogForm">
-            <label for="blogTitle">Blog Title:</label><br>
+        <form id="blogForm" action="{{ url_for('generate_blog') }}" method="POST">
+            <label for="blogTitle">Input a title to generate a blog of 200 words:</label><br>
             <input type="text" id="blogTitle" name="blogTitle" required><br><br>
             <input type="submit" value="Generate Blog">
         </form>
-        
-        <script>
-            document.getElementById('blogForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                const blogTitle = document.getElementById('blogTitle').value;
-                alert('Blog title submitted: ' + blogTitle);
-                // Here you can add your AJAX request to send the data to the server
-            });
-        </script>
-    </body>
+    </div>
+</body>
 </html>
