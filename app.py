@@ -1,8 +1,15 @@
 from flask import Flask, render_template, request, url_for, redirect, jsonify
 import requests
+import os
 import boto3
 
-s3 = boto3.client('s3')
+s3 = boto3.client(
+    's3',
+    aws_access_key_id='AWS_ACCESS_KEY',
+    aws_secret_access_key='AWS_SECRET_ACCESS_KEY',
+    region_name='ap-south-1'
+)
+
 bucket_name = 'shlokbloggenerator'
 prefix = 'blog_output/'
 
@@ -15,7 +22,6 @@ def main():
 @app.route('/blog', methods = ['POST'])
 def generate_blog():
     blog_topic = request.form['blogTitle']
-    blog_content = f'Generated content for blog title {blog_topic}'
     
     # URL of the AWS Lambda function
     lambda_url = 'https://j7d10659ya.execute-api.ap-south-1.amazonaws.com/dev/blog-generation'
@@ -24,8 +30,6 @@ def generate_blog():
     payload = {
         "blog_topic": blog_topic,
         }
-
-    # hit the API Gateway
     
     try:
         response = requests.post(lambda_url, json = payload)
@@ -36,26 +40,30 @@ def generate_blog():
         else:
             print(jsonify({'error': 'Failed to invoke Lambda function', 'status_code': response.status_code}))
     except Exception as e:
+        return jsonify({'error': str(e)})    
+    
+    try:
+        response = s3.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+        if 'Contents' in response:
+            # Find the latest file based on LastModified timestamp
+            latest_file = max(response['Contents'], key=lambda obj: obj['LastModified'])['Key']
+            print(f"Latest file found: {latest_file}")
+            
+            # Retrieve the object
+            obj = s3.get_object(Bucket=bucket_name, Key=latest_file)
+            
+            # Read the content of the file
+            file_content = obj['Body'].read().decode('utf-8')
+            
+            # Store the content in a variable
+            blog_content = file_content
+        else:
+            blog_content = 'No files found in the bucket.'
+    except Exception as e:
         return jsonify({'error': str(e)})
     
-    
-    # add blog display here
-    return render_template('result.html', blog_title=blog_topic, blog_content=blog_topic)
-
-
-    # try:
-    #     # Sending POST request to the Lambda function
-    #     response = requests.post(lambda_url, json=payload)
-
-    #     # Check if the request was successful
-    #     if response.status_code == 200:
-    #         # Process the response from the Lambda function
-    #         response_data = response.json()
-    #         return jsonify(response_data)
-    #     else:
-    #         return jsonify({'error': 'Failed to invoke Lambda function', 'status_code': response.status_code})
-    # except Exception as e:
-    #     return jsonify({'error': str(e)})
+    # Display the blog content in the result.html template
+    return render_template('result.html', blog_title=blog_topic, blog_content=blog_content)
 
 
 

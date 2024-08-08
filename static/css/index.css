@@ -17,7 +17,9 @@ body {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 500px;
+    max-width: 90%; /* Make container responsive */
+    box-sizing: border-box;
+    overflow: auto; /* Ensure content within container scrolls if necessary */
 }
 
 h1, h2 {
@@ -26,8 +28,12 @@ h1, h2 {
 }
 
 p {
-    text-align: center;
+    text-align: left; /* Change text alignment to left for better readability */
     color: #555;
+    white-space: pre-wrap; /* Preserve whitespace and line breaks */
+    word-wrap: break-word; /* Break long words */
+    overflow-wrap: break-word; /* Additional word breaking support */
+    line-height: 1.6; /* Improve readability */
 }
 
 form {
@@ -66,6 +72,10 @@ input[type="submit"]:hover {
 
 #blogDisplay {
     margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ddd; /* Optional border for clarity */
+    border-radius: 4px; /* Optional rounded corners */
+    background-color: #fafafa; /* Optional background color */
 }
 
 #downloadBtn {
